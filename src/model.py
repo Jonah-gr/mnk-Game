@@ -71,20 +71,6 @@ class QLearningAgent(Player):
         encoded_state = [cell for row in board.array for cell in row]
         return [1 if x == self.player_number else -1 if x != 0 else 0 for x in encoded_state]
 
-    def train(self, state, action, reward, next_state):
-        self.update_q_network(state, action, reward, next_state)
-
-        # Update performance metrics
-        self.total_games += 1
-        if reward == 1:  # Assuming a reward of 1 for a win
-            self.wins += 1
-
-        # Calculate winning rate
-        winning_rate = self.wins / self.total_games
-
-        # Check if the current winning rate is better than the best so far
-        if winning_rate > self.best_winning_rate:
-            self.best_winning_rate = winning_rate
 
 
 if __name__ == "__main__":
