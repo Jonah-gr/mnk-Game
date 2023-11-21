@@ -30,11 +30,6 @@ class QLearningAgent(Player):
             self.q_network = QNetwork(self.state_size, self.action_size)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)
 
-        # Variables to track performance
-        self.total_games = 0
-        self.wins = 0
-        self.best_winning_rate = 0.0
-
     def select_action(self, state):
         if random.uniform(0, 1) < self.epsilon:
             print("###############")
@@ -84,10 +79,4 @@ if __name__ == "__main__":
         game = Game(agent1, agent2, Board())
         game.start()
 
-
-    print(agent1.best_winning_rate, agent2.best_winning_rate)
-    if agent1.best_winning_rate > agent2.best_winning_rate:
-        torch.save(agent1.q_network.state_dict(), "agent_q_network.pth")
-    else:
-        torch.save(agent2.q_network.state_dict(), "agent_q_network.pth")
 
