@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -27,8 +28,16 @@ class Agent(Player):
         self.name = "Agent"
         self.player_number = player_number
         self.board_size = board_size
-        self.q_network = QNetwork(input_size=board_size, output_size=board_size - 1)  # One less action after one move
+        self.q_network = QNetwork(input_size=board_size, output_size=board_size)  # One less action after one move
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=0.001)
+
+
+    def load_model_weights(self):
+        model_path = "model.pth"
+        if os.path.exists(model_path):
+            print(f"Loading model weights from {model_path}")
+            self.q_network.load_state_dict(torch.load(model_path))
+            self.q_network.eval()
 
     # Convert the board state to a format suitable for the neural network
     def preprocess_state(self, board):
@@ -41,7 +50,7 @@ class Agent(Player):
         state = self.preprocess_state(board)
         q_values = self.q_network(state)
         valid_moves = [i for i in range(len(q_values[0])) if board.array.flatten()[i] == 0]
-        action = np.random.choice(valid_moves)
+        action = np.argmax(q_values.detach().numpy()) if len(valid_moves) == 0 else np.random.choice(valid_moves)
         x, y = divmod(action, board.n)
         return x, y
 
@@ -62,11 +71,3 @@ class Agent(Player):
         loss = F.mse_loss(current_q, target_q)
         loss.backward()
         self.optimizer.step()
-
-
-# Example usage
-player1 = Player("Player1", 1)
-agent = Agent("Agent", 2, 25)
-
-game = Game(player1, agent)
-game.start()
