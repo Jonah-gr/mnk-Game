@@ -1,5 +1,6 @@
 from main import Board, Player, Game, MCTS
 from agent import Agent
+import torch
 
 
 class Trainer:
@@ -14,9 +15,9 @@ class Trainer:
             alphabet = [chr(value) for value in range(97, 123)] # das folgenden dient nur der Anzeige in der Konsole
             row_dict = {}
             col_dict = {}
-            for k in range(self.m):
+            for k in range(5):
                 row_dict[k] = k + 1
-            for k in range(self.n):
+            for k in range(5):
                 col_dict[k] = alphabet[k]
 
             game_on = True
@@ -43,11 +44,13 @@ class Trainer:
 
                     # Check if the move results in a win or draw
                     if game.board.has_won() == self.agent.player_number:
+                        print(f"{game.agent.name} has won!!")
                         reward = 1.0
-                        game_on = False
                     elif game.board.array.all():
                         reward = 0.5  # Consider a draw as a positive outcome
-                        game_on = False
+                    elif game.board.has_won() == 3 - self.agent.player_number:
+                        print("Agent lost!!")
+                        reward = -1.0
                     else:
                         reward = 0.0
 
@@ -61,14 +64,18 @@ class Trainer:
 
                     # Check for the end of the game
                     if reward != 0.0:
+                        game_on = False
                         break
 
             print(f"Total Reward: {total_reward}")
+    
+        torch.save(self.agent.q_network.state_dict(), "model.pth")
 
 
-player1 = MCTS("MCTS", 1)
-agent = Agent("Agent", 2, board_size=25)
-game = Game(player1, agent)
+if __name__ == "__main__":
+    agent = Agent("Agent", 1, board_size=25)
+    mcts = MCTS(2)
+    game = Game(agent, mcts)
 
-trainer = Trainer(agent, num_episodes=100)
-trainer.train_agent(game)
+    trainer = Trainer(agent, num_episodes=3)
+    trainer.train_agent(game)
