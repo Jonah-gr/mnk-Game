@@ -1,5 +1,5 @@
 # Model
-src/agent_q_network.pth
+src/model.pth
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
