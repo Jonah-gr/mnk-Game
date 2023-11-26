@@ -295,7 +295,7 @@ class MCTS(Player):
         self.children = []
         self.number_of_visits = 0
         self.results = 0
-        self.array_edges = np.concatenate([board.array[0,:-1], board.array[:-1,-1], board.array[-1,::-1], board.array[-2:0:-1]])
+        self.array_edges = np.concatenate([board.array[0,:-1], board.array[:-1,-1], board.array[-1,::-1], board.array[-2:0:-1,0]])
         if not self.array_edges.any() and not board.array[1:self.m-1, 1:self.n-1].all():
             self.small_board = True
             self.board = Board(self.m-2, self.n-2, self.k-1)
